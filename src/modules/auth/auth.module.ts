@@ -7,6 +7,8 @@ import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
+import { PhoneRepository } from '../user/phone.repository';
+import { UserRepository } from '../user/user.repository';
 
 @Module({
     imports: [
@@ -33,7 +35,7 @@ import { JwtStrategy } from './jwt.strategy';
           }),
     ],
     controllers: [AuthController],
-    providers: [AuthService, JwtStrategy],
+    providers: [AuthService, JwtStrategy,PhoneRepository,UserRepository],
     exports: [PassportModule.register({ defaultStrategy: 'jwt' }), AuthService],
 })
 export class AuthModule {}

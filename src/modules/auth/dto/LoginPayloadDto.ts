@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginPayloadDto {
     @ApiProperty({ type: UserDto })
-    user: UserDto;
+    user: any;
     @ApiProperty({ type: TokenPayloadDto })
     token: TokenPayloadDto;
 

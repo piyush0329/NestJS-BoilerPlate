@@ -53,7 +53,7 @@ export class AuthController {
         const userEntity = await this.authService.validateUser(userLoginDto);
 
         const token = await this.authService.createToken(userEntity);
-        return new LoginPayloadDto(userEntity.toDto(), token);
+        return new LoginPayloadDto(userEntity, token);
     }
 
     @Post('register')

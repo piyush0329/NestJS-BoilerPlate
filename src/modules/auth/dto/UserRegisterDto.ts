@@ -32,7 +32,11 @@ export class UserRegisterDto {
     @ApiProperty({ minLength: 6 })
     readonly password: string;
 
+    // @IsOptional()
+    // @ApiProperty()
+    // phone: string;
+
     @IsOptional()
     @ApiProperty()
-    phone: string;
+    phoneNumbers: any[];
 }

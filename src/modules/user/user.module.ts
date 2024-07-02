@@ -5,14 +5,15 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { AuthModule } from '../auth/auth.module';
 import { UserRepository } from './user.repository';
+import { PhoneRepository } from './phone.repository';
 
 @Module({
     imports: [
         forwardRef(() => AuthModule),
-        TypeOrmModule.forFeature([UserRepository]),
+        TypeOrmModule.forFeature([UserRepository,PhoneRepository]),
     ],
     controllers: [UserController],
     exports: [UserService],
-    providers: [UserService],
+    providers: [UserService,PhoneRepository],
 })
 export class UserModule {}

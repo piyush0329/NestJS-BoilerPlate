@@ -11,6 +11,8 @@ import { UsersPageOptionsDto } from './dto/UsersPageOptionsDto';
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
 import { UsersPageDto } from './dto/UsersPageDto';
 import { CloudinaryService } from 'src/shared/services/cloudinary.service';
+import { PhoneRepository } from './phone.repository';
+import { Phone } from './phone.entity';
 
 @Injectable()
 export class UserService {
@@ -18,14 +20,24 @@ export class UserService {
         public readonly userRepository: UserRepository,
         public readonly validatorService: ValidatorService,
         // public readonly awsS3Service: AwsS3Service,
-        public readonly cloudinaryService: CloudinaryService
+        public readonly cloudinaryService: CloudinaryService,
+        public readonly phoneRepository: PhoneRepository
     ) {}
 
     /**
      * Find single user
      */
-    findOne(findData: FindConditions<UserEntity>): Promise<UserEntity> {
-        return this.userRepository.findOne(findData);
+    async findOne(findData: FindConditions<UserEntity>): Promise<UserEntity> {
+        const user = await this.userRepository.query(
+            `SELECT u.id, u.created_at, u.updated_at, u.first_name, u.last_name, u.role, u.email, u.password, u.avatar,
+                    json_agg(p.number) AS phone_numbers
+             FROM users u
+             LEFT JOIN phone p ON p.user_id_id = u.id
+             WHERE u.email = $1
+             GROUP BY u.id`,
+            [findData.email]
+          );
+        return user[0]
     }
     async findByUsernameOrEmail(
         options: Partial<{ username: string; email: string }>,
@@ -49,9 +61,27 @@ export class UserService {
     async createUserNoAvatar(
         userRegisterDto: UserRegisterDto,
     ): Promise<UserEntity> {
+        
+        console.log(userRegisterDto,"testttttttttttttt")
         const user = this.userRepository.create({ ...userRegisterDto });
 
-        return this.userRepository.save(user);
+          console.log(user.phoneNumbers,"hellooooooooooooooooooooooo")
+       
+          if (userRegisterDto.phoneNumbers && userRegisterDto.phoneNumbers.length > 0) {
+            user.phoneNumbers = await Promise.all(
+              userRegisterDto.phoneNumbers.map(async number => {
+                const phone = new Phone();
+                phone.number = number;
+                console.log(phone, "phone");
+                return phone;
+              }),
+            ).catch((error)=>{console.log(error,"error"); throw error})
+          }
+        //   await this.userRepository.save(user)
+
+         
+
+        return await this.userRepository.save(user);
     }
 
     async createUser(
