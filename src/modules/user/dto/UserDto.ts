@@ -30,8 +30,6 @@ export class UserDto extends AbstractDto {
 
     constructor(user: any) {
         super(user)
-        
-        console.log(user,"usrrrrrrrrrrrrr")
         this.firstName = user.firstName;
         this.lastName = user.lastName;
         this.role = user.role;
